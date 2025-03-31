@@ -134,3 +134,36 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Node.js dependencies  
+node_modules/  
+npm-debug.log  
+yarn.lock  
+package-lock.json  
+
+# Environment variables  
+.env  
+.env.local  
+.env.production  
+.env.development  
+
+# Build & Output  
+dist/  
+build/  
+.cache/  
+
+# Logs & Debug  
+logs/  
+*.log  
+debug.log  
+error.log  
+
+# OS-Specific Files  
+.DS_Store  
+Thumbs.db  
+
+# Editor & IDE Files  
+.vscode/  
+.idea/  
+*.swp  
+*.swo  
