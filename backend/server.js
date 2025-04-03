@@ -1,5 +1,6 @@
 const express = require("express");
 const mongoose = require("mongoose");
+const authRoutes = require("./routes/authRoutes");
 const dotenv = require("dotenv");
 const projectRoutes = require("./routes/projectRoutes");
 const taskRoutes = require("./routes/taskRoutes");
@@ -9,8 +10,10 @@ dotenv.config();
 const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/timelogs", timeLogRoutes);
+app.use("/api/projects", projectRoutes);
 
 // Middleware to log incoming requests
 app.use((req, res, next) => {
@@ -22,7 +25,6 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use("/api/projects", projectRoutes);
 // MongoDB Connection
 mongoose
   .connect(process.env.MONGO_URL, {
