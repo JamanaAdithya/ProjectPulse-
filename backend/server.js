@@ -1,15 +1,23 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const authRoutes = require("./routes/authRoutes");
+const cors = require("cors");
 const dotenv = require("dotenv");
+const mongoose = require("mongoose");
+const passport = require("passport");
+const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const taskRoutes = require("./routes/taskRoutes");
 const timeLogRoutes = require("./routes/timeLogRoutes");
+require("./middleware/passport");
 
 dotenv.config();
 const app = express();
+app.use(cors({
+  origin: "http://localhost:5173",
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(passport.initialize());
 app.use("/api/auth", authRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/timelogs", timeLogRoutes);
