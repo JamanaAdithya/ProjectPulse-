@@ -1,23 +1,31 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { Outlet, useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <div className="bg-white p-8 rounded-2xl shadow-lg w-[90%] max-w-xl text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Welcome, {user?.name || "User"} 👋
-        </h1>
-        <p className="text-gray-600 mb-6">You are now logged in.</p>
-        <button
-          onClick={logout}
-          className="bg-red-500 hover:bg-red-600 text-white px-6 py-2 rounded-full transition duration-300"
-        >
-          Logout
+    <div>
+      {/* Header Section */}
+      <header className="dashboard-header">
+        <h1>Welcome, {user?.name || "User"} 👋</h1>
+        <button onClick={logout}>Logout</button>
+      </header>
+
+      {/* Navigation (optional but helpful for now) */}
+      <nav>
+        <button onClick={() => navigate("/dashboard/tasks")}>All Tasks</button>
+        <button onClick={() => navigate("/dashboard/tasks/new")}>
+          Create Task
         </button>
-      </div>
+      </nav>
+
+      {/* Main Content / Nested Routes */}
+      <main>
+        <Outlet />
+      </main>
     </div>
   );
 };
