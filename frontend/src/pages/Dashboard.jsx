@@ -20,6 +20,12 @@ const Dashboard = () => {
         <button onClick={() => navigate("/dashboard/tasks/new")}>
           Create Task
         </button>
+        <button onClick={() => navigate("/dashboard/log-time")}>
+          Log Time
+        </button>
+        <button onClick={() => navigate("/dashboard/task-stats")}>Task Stats</button>
+        <button onClick={() => navigate("/dashboard/time-stats")}>Time Stats</button>
+        <button onClick={() => navigate("/dashboard/productivity-score")}>Productivity Stats</button>
       </nav>
 
       {/* Main Content / Nested Routes */}

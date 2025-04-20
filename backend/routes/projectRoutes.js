@@ -41,9 +41,7 @@ router.post("/", authMiddleware, adminMiddleware, async (req, res) => {
 
     // Validate required fields
     if (!name) {
-      return res
-        .status(400)
-        .json({ error: "Project name is required" });
+      return res.status(400).json({ error: "Project name is required" });
     }
 
     const newProject = new Project({
@@ -71,9 +69,7 @@ router.put("/:id", authMiddleware, async (req, res) => {
     const { name, description, createdBy, members, status } = req.body;
 
     if (!name || !createdBy) {
-      return res
-        .status(400)
-        .json({ error: "Project name is required" });
+      return res.status(400).json({ error: "Project name is required" });
     }
 
     const updatedProject = await Project.findByIdAndUpdate(
@@ -86,12 +82,10 @@ router.put("/:id", authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "Project not found" });
     }
 
-    res
-      .status(200)
-      .json({
-        message: "Project updated successfully",
-        project: updatedProject,
-      });
+    res.status(200).json({
+      message: "Project updated successfully",
+      project: updatedProject,
+    });
   } catch (error) {
     res
       .status(500)
@@ -103,8 +97,8 @@ router.put("/:id", authMiddleware, async (req, res) => {
 router.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
   try {
     const deletedProject = await Project.findByIdAndDelete({
-        _id: req.params.id,
-        createdBy: req.user.userId, // only allow the creater to delete
+      _id: req.params.id,
+      createdBy: req.user.userId, // only allow the creater to delete
     });
     if (!deletedProject) {
       return res.status(400).json({ error: "Project not found" });
@@ -115,6 +109,19 @@ router.delete("/:id", authMiddleware, adminMiddleware, async (req, res) => {
     res
       .status(500)
       .json({ error: "Failed to delete project", details: error.message });
+  }
+});
+
+// Get members of a specific project
+router.get("/:id/members", authMiddleware, async (req, res) => {
+  try {
+    const project = await Project.findById(req.params.id).populate("members");
+    if(!project) {
+      return res.status(404).json({error: "Project not found"});
+    }
+    res.status(200).json({ members: project.members});
+  } catch (error) {
+    res.status(500).json({ error: "Failed to fetch project members", details: error.message });
   }
 });
 module.exports = router;

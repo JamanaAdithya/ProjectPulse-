@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const TaskForm = () => {
-  const { id } = useParams(); // task ID if editing
+  const { id } = useParams();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -17,14 +17,41 @@ const TaskForm = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [projects, setProjects] = useState([]);
+  const [projectMembers, setProjectMembers] = useState([]);
+  const [membersLoading, setMembersLoading] = useState(false);
+  const token = localStorage.getItem("token");
+  const config = { headers: { Authorization: `Bearer ${token}` } };
 
-  // Fetch existing task if in edit mode
+  // Fetch Projects
+  useEffect(() => {
+    const FetchProjects = async () => {
+      try {
+        const res = await axios.get(
+          "http://localhost:5000/api/projects",
+          config
+        );
+        setProjects(res.data);
+      } catch (error) {
+        console.error(
+          "Failed to fetch Projects: ",
+          error.response?.data || error.message
+        );
+      }
+    };
+    FetchProjects();
+  }, []);
+
+  // fetch Task if editing
   useEffect(() => {
     const fetchTask = async () => {
       if (!id) return;
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:5000/api/tasks/${id}`);
+        const res = await axios.get(
+          `http://localhost:5000/api/tasks/${id}`,
+          config
+        );
         const task = res.data.task;
         setFormData({
           title: task.title,
@@ -37,16 +64,41 @@ const TaskForm = () => {
         });
       } catch (error) {
         console.error(
-          "Failed to fetch task:",
+          "Failed to fetch task: ",
           error.response?.data || error.message
         );
       } finally {
         setLoading(false);
       }
     };
-
     fetchTask();
   }, [id]);
+
+  // Fetch Project members when project changes
+  useEffect(() => {
+    const fetchMembers = async () => {
+      if (!formData.project) {
+        return;
+      }
+      setMembersLoading(true);
+      try {
+        const res = await axios.get(
+          `http://localhost:5000/api/projects/${formData.project}/members`,
+          config
+        );
+        setProjectMembers(res.data.members);
+      } catch (error) {
+        console.error(
+          "Failed to fetch members: ",
+          error.response?.data || error.message
+        );
+        setProjectMembers([]);
+      } finally {
+        setMembersLoading(false); 
+      }
+    };
+    fetchMembers();
+  }, [formData.project]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
@@ -57,26 +109,18 @@ const TaskForm = () => {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem("token"); // Assuming token is stored in localStorage
-      const config = {
-        headers: { Authorization: `Bearer ${token}` },
-      };
-
       if (id) {
-        // Editing
         await axios.put(
           `http://localhost:5000/api/tasks/${id}`,
           formData,
           config
         );
-        console.log("Task updated successfully");
+        console.log("Task Updated");
       } else {
-        // Creating
         await axios.post("http://localhost:5000/api/tasks", formData, config);
-        console.log("Task created successfully");
+        console.log("Task Created");
       }
-
-      navigate("/dashboard"); // Redirect to dashboard
+      navigate("/dashboard");
     } catch (error) {
       console.error(
         "Error submitting task:",
@@ -99,6 +143,7 @@ const TaskForm = () => {
         onChange={handleChange}
         required
       />
+
       <textarea
         name="description"
         placeholder="Description"
@@ -106,21 +151,42 @@ const TaskForm = () => {
         onChange={handleChange}
       />
 
-      <input
+      <select
         name="project"
-        type="text"
-        placeholder="Project ID"
         value={formData.project}
         onChange={handleChange}
         required
-      />
-      <input
+      >
+        <option value="">Select Project</option>
+        {projects.map((proj) => (
+          <option key={proj._id} value={proj._id}>
+            {proj.name}
+          </option>
+        ))}
+      </select>
+
+      <select
         name="assignedTo"
-        type="text"
-        placeholder="Assigned To (User ID)"
         value={formData.assignedTo}
         onChange={handleChange}
-      />
+        disabled={!formData.project || membersLoading}
+        required={projectMembers.length > 0}
+      >
+        <option value="">
+          {formData.project
+            ? "Select a project first"
+            : membersLoading
+            ? "Loading members..."
+            : projectMembers.length > 0
+            ? "Assign to member"
+            : "No members available"}
+        </option>
+        {projectMembers.map((member) => (
+          <option key={member._id} value={member._id}>
+            {member.name || member.email}
+          </option>
+        ))}
+      </select>
 
       <input
         name="dueDate"

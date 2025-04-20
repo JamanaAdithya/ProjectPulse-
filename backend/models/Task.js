@@ -19,10 +19,16 @@ const taskSchema = new mongoose.Schema(
     priority: {
       type: String,
       enum: ["low", "medium", "high"],
-      default: "medium"
+      default: "medium",
     },
+    timeLogs: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "TimeLog",
+      },
+    ],
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model("Task", taskSchema);
+module.exports = mongoose.models.Task || mongoose.model("Task", taskSchema);

@@ -27,7 +27,14 @@ router.get("/:id", async (req, res) => {
   try {
     const task = await Task.findById(req.params.id)
       .populate("assignedTo", "name email")
-      .populate("project", "name status");
+      .populate("project", "name status")
+      .populate({
+        path: "timeLogs",
+        populate: {
+          path: "user project",
+          select: "name email",
+        },
+      });
     if (!task) {
       return res.status(404).json({ error: "Task not found" });
     }

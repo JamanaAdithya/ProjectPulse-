@@ -63,6 +63,25 @@ const TaskDetail = () => {
       >
         Edit Task
       </button>
+
+      {task.timeLogs?.length > 0 ? (
+        <div style={{ marginTop: "30px" }}>
+          <h3>Time Logs</h3>
+          <ul>
+            {task.timeLogs.map((log) => (
+              <li key={log._id}>
+                <strong>User:</strong> {log.user?.name || "Unknown"} <br />
+                <strong>Duration:</strong> {log.duration} mins <br />
+                <strong>Start:</strong>{" "}
+                {new Date(log.startTime).toLocaleString()} <br />
+                <strong>End:</strong> {new Date(log.endTime).toLocaleString()}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p style={{ marginTop: "30px" }}>No time logs for this task yet.</p>
+      )}
     </div>
   );
 };

@@ -6,7 +6,10 @@ import PrivateRoute from "./components/common/PrivateRoute";
 import TaskList from "./pages/tasks/TaskList";
 import TaskForm from "./pages/tasks/TaskForm";
 import TaskDetail from "./pages/tasks/TaskDetail";
-
+import TimeLogForm from "./pages/timeLogs/timeLogForm";
+import TaskStats from "./pages/stats/TaskStats";  
+import TimeStats from "./pages/stats/TimeStats";  
+import ProductivityStats from "./pages/stats/productivityStats";
 function App() {
   return (
     <Routes>
@@ -27,6 +30,10 @@ function App() {
         <Route path="tasks/new" element={<TaskForm />} />
         <Route path="tasks/:id" element={<TaskDetail />} />
         <Route path="tasks/:id/edit" element={<TaskForm />} />
+        <Route path="log-time" element={<TimeLogForm />} />
+        <Route path="task-stats" element={<TaskStats />} />
+        <Route path="time-stats" element={<TimeStats />} />
+        <Route path="productivity-score" element={<ProductivityStats />} />
       </Route>
     </Routes>
   );
